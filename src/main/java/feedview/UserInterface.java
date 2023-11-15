@@ -1,13 +1,21 @@
 package feedview;
 
-import feedcontroller.FeedController;
+import feedcontroller.AppController;
 import feedmodel.Article;
-import feedmodel.Feed;
 
 import java.util.List;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+
+/**
+ * UserInterface.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-14
+ * Core UI, main frame for application and menus
+ */
 
 public class UserInterface {
 
@@ -15,15 +23,15 @@ public class UserInterface {
     private final JPanel mainPanel = createBorderPanel();
     private final JFrame mainFrame = createFrame();
 
-    private final FeedController feedController;
+    private final AppController appController;
     private final FeedPanel feedPane;
 
 
-    public UserInterface(FeedController feedController) {
-        this.feedController = feedController;
+    public UserInterface(AppController appController) {
+        this.appController = appController;
         mainFrame.setContentPane(mainPanel);
         mainPanel.add(createMenu(), BorderLayout.NORTH);
-        feedPane = new FeedPanel(feedController);
+        feedPane = new FeedPanel(appController);
         mainPanel.add(feedPane.getPane(), BorderLayout.CENTER);
     }
 
@@ -52,8 +60,14 @@ public class UserInterface {
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
         JMenuItem addFeedMenuItem = new JMenuItem("Add Feed");
-        addFeedMenuItem.addActionListener(event -> feedController.addFeed(promptURL()));
+        addFeedMenuItem.addActionListener(event -> appController.addFeed(promptURL()));
         menu.add(addFeedMenuItem);
+        JMenuItem settingsMenuItem = new JMenuItem("Settings");
+        settingsMenuItem.addActionListener(event -> {
+            SettingsUI sui = new SettingsUI(appController);
+            sui.show();
+        });
+        menu.add(settingsMenuItem);
         return menuBar;
     }
 

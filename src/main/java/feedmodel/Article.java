@@ -2,6 +2,15 @@ package feedmodel;
 
 import java.net.URL;
 
+/**
+ * Article.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-14
+ * Individual article, with all attributes of an article used for display in the application
+ */
+
 public class Article {
 
     private final String feedName;

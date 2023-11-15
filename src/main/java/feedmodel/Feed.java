@@ -3,6 +3,15 @@ package feedmodel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Feed.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-14
+ * Represents an individual RSS feed and contains the articles from the feed
+ */
+
 public class Feed {
 
     private final List<Article> articles = new ArrayList<>();

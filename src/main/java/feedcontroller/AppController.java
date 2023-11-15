@@ -18,22 +18,44 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FeedController {
+/**
+ * AppController.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-12
+ * Overall application controller
+ */
+
+public class AppController {
 
     private final Logger logger = Logger.getLogger("Controller");
     private final List<Feed> feeds = new ArrayList<>();
     private static final int ARTICLES_PER_FEED = 5;
+    private final AppSettings settings = AppSettings.getInstance();
 
     private final UserInterface ui;
 
-    public FeedController() {
+    public AppController() {
         ui = new UserInterface(this);
     }
 
     public void start() {
+        try {
+            settings.readSettingsFile();
+        } catch (IOException e) {
+            ui.showError("No user config found.");
+            settings.setDefaults();
+            settings.save();
+        }
         ui.show();
     }
 
+
+    /**
+     * Attempt to add a new RSS feed to the list and populate its articles
+     * @param inputURLString url of the feed
+     */
     public void addFeed(String inputURLString) {
         try {
             URL url = new URL(inputURLString);
@@ -81,6 +103,10 @@ public class FeedController {
         ui.updateArticleList(getCurrentArticleList());
     }
 
+    /**
+     * Attempt to open the system default web browser application to the URL of the article in question
+     * @param url String url to open
+     */
     public void openInBrowser(String url) {
         try {
             URI uri = new URI(url);
@@ -109,5 +135,11 @@ public class FeedController {
         return articles;
     }
 
-
+    public void setSettings(int updateInterval, int articleCount, boolean autoRefresh, boolean aggregate) {
+        settings.setUpdateInterval(updateInterval);
+        settings.setArticlesPerFeed(articleCount);
+        settings.setAutoRefresh(autoRefresh);
+        settings.setAggregateFeeds(aggregate);
+        settings.save();
+    }
 }

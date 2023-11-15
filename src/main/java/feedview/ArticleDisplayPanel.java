@@ -1,6 +1,6 @@
 package feedview;
 
-import feedcontroller.FeedController;
+import feedcontroller.AppController;
 import feedmodel.Article;
 
 import javax.imageio.ImageIO;
@@ -9,19 +9,26 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * ArticleDisplayPanel.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-14
+ * UI panel to display the article details and action buttons
+ */
+
 public class ArticleDisplayPanel {
 
     private final JPanel panel = new JPanel();
-    private final FeedController controller;
 
-    public ArticleDisplayPanel(FeedController controller, Article article) {
-        this.controller = controller;
+    public ArticleDisplayPanel(AppController controller, Article article) {
         panel.setLayout(new BorderLayout());
         panel.setPreferredSize(new Dimension(200, 100));
         panel.add(new JLabel(article.getFeedName()), BorderLayout.NORTH);
         panel.add(new JLabel(article.getTitle()), BorderLayout.CENTER);
         panel.add(new JLabel(article.getSummary()), BorderLayout.SOUTH);
-        panel.add(getButtonStack(article), BorderLayout.WEST);
+        panel.add(getButtonStack(controller, article), BorderLayout.WEST);
 
         if (article.hasImageURL()) {
             Image image;
@@ -34,7 +41,7 @@ public class ArticleDisplayPanel {
         }
     }
 
-    private JPanel getButtonStack(Article article) {
+    private JPanel getButtonStack(AppController controller, Article article) {
         JPanel buttonStackPanel = new JPanel();
         buttonStackPanel.setMinimumSize(new Dimension(30, 100));
         buttonStackPanel.setLayout(new BoxLayout(buttonStackPanel, BoxLayout.Y_AXIS));
