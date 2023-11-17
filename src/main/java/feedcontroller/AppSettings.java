@@ -5,6 +5,7 @@ import com.fasterxml.jackson.jr.ob.JSON;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AppSettings {
 
@@ -14,8 +15,8 @@ public class AppSettings {
     private boolean autoRefresh = false;
     private boolean aggregateFeeds = true;
     private static AppSettings instance = null;
-    private ArrayList<String> subscribedFeedURLs = new ArrayList<>();
-    private ArrayList<String> readUIDs = new ArrayList<>();
+    private List<String> subscribedFeedURLs;
+    private List<String> readUIDs;
 
     public static synchronized AppSettings getInstance() {
         if (instance == null) {
@@ -81,18 +82,47 @@ public class AppSettings {
         subscribedFeedURLs.add(url);
     }
 
+    public List<String> getSubscribedFeedURLs() {
+        return this.subscribedFeedURLs;
+    }
+
+    // only used for serialization
+    public void setSubscribedFeedURLs(List<String> subscribedFeedURLs) {
+        this.subscribedFeedURLs = subscribedFeedURLs;
+    }
+
+    // only used for serialization
+    public void setReadUIDs(List<String> readUIDs) {
+        this.readUIDs = readUIDs;
+    }
+
+    // only used for serialization
+    public List<String> getReadUIDs() {
+        return this.readUIDs;
+    }
+
+    public void addReadUID(String uid) {
+        this.readUIDs.add(uid);
+    }
+
+    public boolean hasReadUID(String uid) {
+        return readUIDs.contains(uid);
+    }
+
     public void setDefaults() {
         updateInterval = 5;
         articlesPerFeed = 3;
         autoRefresh = false;
         aggregateFeeds = true;
+        subscribedFeedURLs = new ArrayList<>();
+        readUIDs = new ArrayList<>();
     }
 
     public void save() {
         try {
             writeSettingsFile();
         } catch (IOException ignored) {
-
+            // just give up for now
         }
     }
 

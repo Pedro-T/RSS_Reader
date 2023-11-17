@@ -5,6 +5,7 @@ import feedmodel.Article;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -26,24 +27,29 @@ public class FeedPanel {
     private final JScrollPane scrollPane;
     private final AppController controller;
 
+    private ArticleListFormat listFormat;
+
     public FeedPanel(AppController controller) {
         this.controller = controller;
+        this.listFormat = new AggregateArticlePanel(controller); // default, TODO settings for this
         scrollPane = new JScrollPane(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         scrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
     }
 
-    public void update(List<Article> articles)  {
-        panel.removeAll();
-        if (articles.size() != 0) {
-            articles.forEach(article -> panel.add(new ArticleDisplayPanel(controller, article).getPanel()));
-        } else {
-            panel.add(new JLabel("No articles to show!", JLabel.CENTER));
-        }
-
-        // avoids issue where panel isn't refreshed until frame is resized. Based on https://stackoverflow.com/questions/11069807/jpanel-doesnt-update-until-resize-jframe
-        EventQueue.invokeLater(panel::repaint);
+    public void update(Map<String, List<Article>> articles)  {
+        EventQueue.invokeLater(() -> {
+            panel.removeAll();
+            if (articles.size() != 0) {
+                List<JPanel> articlePanels = listFormat.create(articles);
+                for (JPanel ap : articlePanels) {
+                    panel.add(ap);
+                }
+            } else {
+                panel.add(new JLabel("No articles to show!", JLabel.CENTER));
+            }
+        });
     }
 
     public JScrollPane getPane() {

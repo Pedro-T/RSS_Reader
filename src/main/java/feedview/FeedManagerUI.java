@@ -50,7 +50,10 @@ public class FeedManagerUI {
         JTableHeader header = feedTable.getTableHeader();
         header.setReorderingAllowed(false);
         panel.add(new JScrollPane(feedTable));
-        deleteButton.addActionListener(event -> controller.removeFeedByURL(tableData[feedTable.getSelectionModel().getSelectedIndices()[0]][1]));
+        deleteButton.addActionListener(event -> {
+            controller.removeFeedByURL(tableData[feedTable.getSelectionModel().getSelectedIndices()[0]][1]);
+            updateFeedTable();
+        });
         panel.add(deleteButton);
         return panel;
     }
@@ -84,7 +87,7 @@ public class FeedManagerUI {
         });
         JButton addFeedButton = new JButton("Add");
         addFeedButton.addActionListener(event -> {
-            controller.addFeed(urlField.getText());
+            controller.subscribeToFeed(urlField.getText());
             updateFeedTable();
             urlField.setText(defaultText);
         });

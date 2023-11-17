@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Map;
 
 /**
  * UserInterface.java
@@ -77,7 +78,7 @@ public class UserInterface {
         JOptionPane.showMessageDialog(this.mainFrame, message);
     }
 
-    public void updateArticleList(List<Article> articles) {
+    public void updateArticleList(Map<String, List<Article>> articles) {
         feedPane.update(articles);
         mainFrame.setVisible(true);
     }

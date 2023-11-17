@@ -15,8 +15,8 @@ import java.net.URL;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-16
- * UI panel to display the article details and action buttons
+ * @version 2023-11-17
+ * Provides a UI panel to display the article details and action buttons
  */
 
 public class ArticleDisplayPanel {
@@ -62,9 +62,9 @@ public class ArticleDisplayPanel {
     /**
      * Create and return the per-article control stack. This consists of buttons for three actions
      * Open in Browser, Remove, Save
-     * @param controller
-     * @param article
-     * @return
+     * @param controller appcontroller to contact for actions
+     * @param article article which these buttons are relevant for
+     * @return a panel with the three buttons
      */
     private JPanel getButtonStack(AppController controller, Article article) {
         JPanel buttonStackPanel = new JPanel();

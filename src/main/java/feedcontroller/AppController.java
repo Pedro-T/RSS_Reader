@@ -12,7 +12,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -40,6 +42,12 @@ public class AppController {
     }
 
     public void start() {
+        if (settings.getSubscribedFeedURLs().size() != 0) {
+            for (String url : settings.getSubscribedFeedURLs()) {
+                logger.log(Level.INFO, url);
+                addFeed(url);
+            }
+        }
         ui.show();
     }
 
@@ -51,6 +59,12 @@ public class AppController {
             list[i][1] = feeds.get(i).getFeedURL();
         }
         return list;
+    }
+
+    public void subscribeToFeed(String inputURLString) {
+        settings.addSubURL(inputURLString);
+        settings.save();
+        addFeed(inputURLString);
     }
 
     /**
@@ -91,10 +105,12 @@ public class AppController {
                 }
             }
             feeds.add(feed);
-            ui.updateArticleList(getCurrentArticleList());
+            ui.updateArticleList(getCurrentArticles());
 
         } catch(IOException | DocumentException e) {
             ui.showError("Malformed URL or invalid feed. Please double-check input");
+            settings.removeSubURL(inputURLString);
+            settings.save();
             throw new RuntimeException(e);
         }
     }
@@ -107,9 +123,9 @@ public class AppController {
                 break;
             }
         }
+        settings.removeSubURL(feedURL);
         logger.log(Level.INFO, String.format("Current feeds: %s", feeds));
-        logger.log(Level.INFO, String.format(getCurrentArticleList().toString()));
-        ui.updateArticleList(getCurrentArticleList());
+        ui.updateArticleList(getCurrentArticles());
     }
 
     private Document getFeed(URL url) throws IOException, DocumentException {
@@ -120,8 +136,10 @@ public class AppController {
         for (Feed f : feeds) {
             f.remove(article);
         }
+        settings.addReadUID(article.getUniqueID());
+        settings.save();
         logger.log(Level.INFO, String.format("Removed %s\n", article.getTitle()));
-        ui.updateArticleList(getCurrentArticleList());
+        ui.updateArticleList(getCurrentArticles());
     }
 
     /**
@@ -141,6 +159,21 @@ public class AppController {
             ui.showError("Unable to open browser or action not supported.");
             e.printStackTrace();
         }
+    }
+
+    private Map<String, List<Article>> getCurrentArticles()  {
+        HashMap<String, List<Article>> articles = new HashMap<>();
+        for (Feed f : feeds) {
+            articles.put(f.getName(), new ArrayList<Article>());
+            logger.log(Level.INFO, String.format("Feed %s has %d articles.", f.getName(), f.getArticles().size()));
+            for (int i = 0; i < settings.getArticlesPerFeed(); i++) {
+                if (f.getArticles().size() <= i) {
+                    break;
+                }
+                articles.get(f.getName()).add(f.getArticles().get(i));
+            }
+        }
+        return articles;
     }
 
     private List<Article> getCurrentArticleList()  {

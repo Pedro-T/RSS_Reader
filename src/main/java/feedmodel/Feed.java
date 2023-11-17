@@ -1,5 +1,7 @@
 package feedmodel;
 
+import feedcontroller.AppSettings;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -37,7 +39,7 @@ public class Feed {
     }
 
     public void addArticle(Article article) {
-        if (!readUIDs.contains(article.getUniqueID())) {
+        if (!AppSettings.getInstance().hasReadUID(article.getUniqueID())) {
             this.articles.add(article);
         }
     }
