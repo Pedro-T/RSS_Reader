@@ -5,6 +5,7 @@ import feedmodel.Article;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +15,7 @@ import java.net.URL;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-14
+ * @version 2023-11-16
  * UI panel to display the article details and action buttons
  */
 
@@ -23,13 +24,13 @@ public class ArticleDisplayPanel {
     private final JPanel panel = new JPanel();
 
     public ArticleDisplayPanel(AppController controller, Article article) {
+        panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         panel.setLayout(new BorderLayout());
         panel.setPreferredSize(new Dimension(200, 100));
-        panel.add(new JLabel(article.getFeedName()), BorderLayout.NORTH);
-        panel.add(new JLabel(article.getTitle()), BorderLayout.CENTER);
-        panel.add(new JLabel(article.getSummary()), BorderLayout.SOUTH);
+        panel.add(new JLabel(article.getFeedName()), BorderLayout.SOUTH);
+        panel.add(new JLabel(article.getTitle()), BorderLayout.NORTH);
+        panel.add(getSummaryArea(article), BorderLayout.CENTER);
         panel.add(getButtonStack(controller, article), BorderLayout.WEST);
-
         if (article.hasImageURL()) {
             Image image;
             try {
@@ -41,6 +42,30 @@ public class ArticleDisplayPanel {
         }
     }
 
+    /**
+     * Create and return a JTextArea for the article summary text. This is mostly for word wrapping capabilities vs a JLabel
+     * @param article article for which to generate the summary area
+     * @return a JTextAre properly formatted with the summary text
+     */
+    private JTextArea getSummaryArea(Article article) {
+        JTextArea area = new JTextArea();
+        area.setText(article.getSummary());
+        area.setWrapStyleWord(true);
+        area.setLineWrap(true);
+        area.setEditable(false);
+        area.setFocusable(false);
+        area.setBackground(UIManager.getColor("Panel.background"));
+        area.setFont(UIManager.getFont("Label.font"));
+        return area;
+    }
+
+    /**
+     * Create and return the per-article control stack. This consists of buttons for three actions
+     * Open in Browser, Remove, Save
+     * @param controller
+     * @param article
+     * @return
+     */
     private JPanel getButtonStack(AppController controller, Article article) {
         JPanel buttonStackPanel = new JPanel();
         buttonStackPanel.setMinimumSize(new Dimension(30, 100));

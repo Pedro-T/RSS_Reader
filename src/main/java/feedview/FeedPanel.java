@@ -2,6 +2,8 @@ package feedview;
 
 import feedcontroller.AppController;
 import feedmodel.Article;
+
+import java.awt.*;
 import java.util.List;
 
 import javax.swing.*;
@@ -34,7 +36,14 @@ public class FeedPanel {
 
     public void update(List<Article> articles)  {
         panel.removeAll();
-        articles.forEach(article -> panel.add(new ArticleDisplayPanel(controller, article).getPanel()));
+        if (articles.size() != 0) {
+            articles.forEach(article -> panel.add(new ArticleDisplayPanel(controller, article).getPanel()));
+        } else {
+            panel.add(new JLabel("No articles to show!", JLabel.CENTER));
+        }
+
+        // avoids issue where panel isn't refreshed until frame is resized. Based on https://stackoverflow.com/questions/11069807/jpanel-doesnt-update-until-resize-jframe
+        EventQueue.invokeLater(panel::repaint);
     }
 
     public JScrollPane getPane() {

@@ -12,8 +12,11 @@ public class SettingsUI {
 
     private final JCheckBox aggregateFeedsCheckBox = new JCheckBox("Aggregate Feeds");
     private final JCheckBox autoRefreshCheckBox = new JCheckBox("Auto-Refresh");
+
+    private final JPanel settingsPanel = new JPanel();
     private JSlider updateIntervalSlider;
     private JSlider articlesPerFeedSlider;
+    private final AppSettings settings = AppSettings.getInstance();
 
     private final AppController controller;
 
@@ -28,41 +31,39 @@ public class SettingsUI {
     }
 
     public void show() {
-
-        settingsFrame.setContentPane(getSettingsPanel());
-        settingsFrame.setVisible(true);
+        EventQueue.invokeLater(() -> settingsFrame.setVisible(true));
     }
 
     private JPanel getSettingsPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        EventQueue.invokeLater(() -> {
+            settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 
-        AppSettings settings = AppSettings.getInstance();
-        if (settings.isAutoRefresh()) {
-            autoRefreshCheckBox.doClick();
-        }
-        if (settings.isAggregateFeeds()) {
-            aggregateFeedsCheckBox.doClick();
-        }
-        panel.add(autoRefreshCheckBox);
-        panel.add(aggregateFeedsCheckBox);
+            if (settings.isAutoRefresh()) {
+                autoRefreshCheckBox.doClick();
+            }
+            if (settings.isAggregateFeeds()) {
+                aggregateFeedsCheckBox.doClick();
+            }
+            settingsPanel.add(autoRefreshCheckBox);
+            settingsPanel.add(aggregateFeedsCheckBox);
 
-        updateIntervalSlider = new JSlider(JSlider.HORIZONTAL, 1, 30, settings.getUpdateInterval());
-        updateIntervalSlider.setMajorTickSpacing(5);
-        updateIntervalSlider.setPaintTicks(true);
-        updateIntervalSlider.setPaintLabels(true);
-        panel.add(new JLabel("Update Interval (minutes)"));
-        panel.add(updateIntervalSlider);
+            updateIntervalSlider = new JSlider(JSlider.HORIZONTAL, 1, 30, settings.getUpdateInterval());
+            updateIntervalSlider.setMajorTickSpacing(5);
+            updateIntervalSlider.setPaintTicks(true);
+            updateIntervalSlider.setPaintLabels(true);
+            settingsPanel.add(new JLabel("Update Interval (minutes)"));
+            settingsPanel.add(updateIntervalSlider);
 
-        articlesPerFeedSlider = new JSlider(JSlider.HORIZONTAL, 1 , 10, settings.getArticlesPerFeed());
-        articlesPerFeedSlider.setMajorTickSpacing(2);
-        articlesPerFeedSlider.setPaintTicks(true);
-        articlesPerFeedSlider.setPaintLabels(true);
-        panel.add(new JLabel("Articles per Feed"));
-        panel.add(articlesPerFeedSlider);
-        panel.add(getSaveButton());
-        panel.add(getCloseButton());
-        return panel;
+            articlesPerFeedSlider = new JSlider(JSlider.HORIZONTAL, 1 , 10, settings.getArticlesPerFeed());
+            articlesPerFeedSlider.setMajorTickSpacing(2);
+            articlesPerFeedSlider.setPaintTicks(true);
+            articlesPerFeedSlider.setPaintLabels(true);
+            settingsPanel.add(new JLabel("Articles per Feed"));
+            settingsPanel.add(articlesPerFeedSlider);
+            settingsPanel.add(getSaveButton());
+            settingsPanel.add(getCloseButton());
+        });
+        return settingsPanel;
     }
 
     private JButton getSaveButton() {

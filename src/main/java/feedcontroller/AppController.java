@@ -31,7 +31,6 @@ public class AppController {
 
     private final Logger logger = Logger.getLogger("Controller");
     private final List<Feed> feeds = new ArrayList<>();
-    private static final int ARTICLES_PER_FEED = 5;
     private final AppSettings settings = AppSettings.getInstance();
 
     private final UserInterface ui;
@@ -41,16 +40,18 @@ public class AppController {
     }
 
     public void start() {
-        try {
-            settings.readSettingsFile();
-        } catch (IOException e) {
-            ui.showError("No user config found.");
-            settings.setDefaults();
-            settings.save();
-        }
         ui.show();
     }
 
+
+    public String[][] getFeedNamesAndURLs() {
+        String[][] list = new String[feeds.size()][2];
+        for (int i = 0; i < feeds.size(); i++) {
+            list[i][0] = feeds.get(i).getName();
+            list[i][1] = feeds.get(i).getFeedURL();
+        }
+        return list;
+    }
 
     /**
      * Attempt to add a new RSS feed to the list and populate its articles
@@ -80,6 +81,12 @@ public class AppController {
                             builder.setSummary(content);
                         }
                     }
+                    Node uidNode = s.selectSingleNode("guid");
+                    if (uidNode != null) {
+                        builder.setUniqueID(uidNode.getText());
+                    } else {
+                        builder.generateUniqueID();
+                    }
                     feed.addArticle(builder.build());
                 }
             }
@@ -91,6 +98,20 @@ public class AppController {
             throw new RuntimeException(e);
         }
     }
+
+    public void removeFeedByURL(String feedURL) {
+        for (Feed f : feeds) {
+            if (f.getFeedURL().equals(feedURL)) {
+                feeds.remove(f);
+                logger.log(Level.INFO, String.format("Removed feed %s with URL %s", f.getName(), f.getFeedURL()));
+                break;
+            }
+        }
+        logger.log(Level.INFO, String.format("Current feeds: %s", feeds));
+        logger.log(Level.INFO, String.format(getCurrentArticleList().toString()));
+        ui.updateArticleList(getCurrentArticleList());
+    }
+
     private Document getFeed(URL url) throws IOException, DocumentException {
         return new SAXReader().read(url);
     }
@@ -125,7 +146,8 @@ public class AppController {
     private List<Article> getCurrentArticleList()  {
         List<Article> articles = new ArrayList<>();
         for (Feed f : feeds) {
-            for (int i = 0; i < ARTICLES_PER_FEED; i++) {
+            logger.log(Level.INFO, String.format("Feed %s has %d articles.", f.getName(), f.getArticles().size()));
+            for (int i = 0; i < settings.getArticlesPerFeed(); i++) {
                 if (f.getArticles().size() <= i) {
                     break;
                 }
@@ -141,5 +163,8 @@ public class AppController {
         settings.setAutoRefresh(autoRefresh);
         settings.setAggregateFeeds(aggregate);
         settings.save();
+        logger.log(Level.INFO, String.valueOf(settings.getUpdateInterval()));
+        logger.log(Level.INFO, String.valueOf(settings.getArticlesPerFeed()));
+        logger.log(Level.INFO, settings.toString());
     }
 }

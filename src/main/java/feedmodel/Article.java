@@ -17,7 +17,8 @@ public class Article {
     private final String title;
     private final String summary;
     private final String url;
-    private URL imageURL;
+    private final URL imageURL;
+    private final String uniqueID;
 
     public String getFeedName() {
         return feedName;
@@ -31,12 +32,17 @@ public class Article {
         return summary;
     }
 
+    public String getUniqueID() {
+        return uniqueID;
+    }
+
     private Article(ArticleBuilder builder) {
         this.feedName = builder.feedName;
         this.title = builder.title;
         this.url = builder.url;
         this.summary = builder.summary != null ? builder.summary : "No Summary Available";
         this.imageURL = builder.imageURL;
+        this.uniqueID = builder.uniqueID;
     }
 
     public boolean hasImageURL() {
@@ -57,7 +63,7 @@ public class Article {
         private String summary;
         private String url;
 
-        private int uniqueID = 0;
+        private String uniqueID;
         private URL imageURL = null;
 
         public ArticleBuilder(String feedName, String title, String url) {
@@ -66,8 +72,8 @@ public class Article {
             this.url = url;
         }
 
-        public ArticleBuilder setUnqiueID(int unqiueID) {
-            this.uniqueID = unqiueID;
+        public ArticleBuilder setUniqueID(String uniqueID) {
+            this.uniqueID = uniqueID;
             return this;
         }
 

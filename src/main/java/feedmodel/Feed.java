@@ -1,20 +1,21 @@
 package feedmodel;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Feed.java
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-14
+ * @version 2023-11-16
  * Represents an individual RSS feed and contains the articles from the feed
  */
 
 public class Feed {
 
     private final List<Article> articles = new ArrayList<>();
+    private final List<String> readUIDs = new ArrayList<>();
     private final String name;
     private final String feedURL;
 
@@ -36,10 +37,13 @@ public class Feed {
     }
 
     public void addArticle(Article article) {
-        this.articles.add(article);
+        if (!readUIDs.contains(article.getUniqueID())) {
+            this.articles.add(article);
+        }
     }
 
     public void remove(Article article) {
+        this.readUIDs.add(article.getUniqueID());
         this.articles.remove(article);
     }
 

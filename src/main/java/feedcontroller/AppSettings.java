@@ -4,18 +4,28 @@ import com.fasterxml.jackson.jr.ob.JSON;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class AppSettings {
 
     private static final String SETTINGS_FILE_NAME = "settings.json";
     private int updateInterval = 5;
-
     private int articlesPerFeed = 3;
     private boolean autoRefresh = false;
     private boolean aggregateFeeds = true;
-    private static AppSettings instance = new AppSettings();
+    private static AppSettings instance = null;
+    private ArrayList<String> subscribedFeedURLs = new ArrayList<>();
+    private ArrayList<String> readUIDs = new ArrayList<>();
 
-    public static AppSettings getInstance() {
+    public static synchronized AppSettings getInstance() {
+        if (instance == null) {
+            try {
+                instance = readSettingsFile();
+            } catch (IOException e) {
+                instance = new AppSettings();
+                instance.setDefaults();
+            }
+        }
         return instance;
     }
 
@@ -23,8 +33,8 @@ public class AppSettings {
 
     }
 
-    public void readSettingsFile() throws IOException {
-        instance = JSON.std.beanFrom(AppSettings.class, new File(SETTINGS_FILE_NAME));
+    private static AppSettings readSettingsFile() throws IOException {
+        return JSON.std.beanFrom(AppSettings.class, new File(SETTINGS_FILE_NAME));
     }
 
     private void writeSettingsFile() throws IOException {
@@ -61,6 +71,14 @@ public class AppSettings {
 
     public void setAggregateFeeds(boolean aggregateFeeds) {
         this.aggregateFeeds = aggregateFeeds;
+    }
+
+    public void removeSubURL(String url) {
+        subscribedFeedURLs.remove(url);
+    }
+
+    public void addSubURL(String url) {
+        subscribedFeedURLs.add(url);
     }
 
     public void setDefaults() {

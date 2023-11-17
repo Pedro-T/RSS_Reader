@@ -25,6 +25,7 @@ public class UserInterface {
 
     private final AppController appController;
     private final FeedPanel feedPane;
+    private final FeedManagerUI feedManager;
 
 
     public UserInterface(AppController appController) {
@@ -32,6 +33,7 @@ public class UserInterface {
         mainFrame.setContentPane(mainPanel);
         mainPanel.add(createMenu(), BorderLayout.NORTH);
         feedPane = new FeedPanel(appController);
+        feedManager = new FeedManagerUI(mainFrame, appController);
         mainPanel.add(feedPane.getPane(), BorderLayout.CENTER);
     }
 
@@ -43,7 +45,7 @@ public class UserInterface {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle(FRAME_TITLE);
-        frame.setPreferredSize(new Dimension(1024, 768));
+        frame.setPreferredSize(new Dimension(500, 800));
         frame.setResizable(true);
         frame.pack();
         return frame;
@@ -59,8 +61,8 @@ public class UserInterface {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         menuBar.add(menu);
-        JMenuItem addFeedMenuItem = new JMenuItem("Add Feed");
-        addFeedMenuItem.addActionListener(event -> appController.addFeed(promptURL()));
+        JMenuItem addFeedMenuItem = new JMenuItem("Manage Feeds");
+        addFeedMenuItem.addActionListener(event -> feedManager.show());
         menu.add(addFeedMenuItem);
         JMenuItem settingsMenuItem = new JMenuItem("Settings");
         settingsMenuItem.addActionListener(event -> {
@@ -71,16 +73,12 @@ public class UserInterface {
         return menuBar;
     }
 
-    private String promptURL() {
-        return JOptionPane.showInputDialog(this.mainFrame, "Enter feed URL");
-    }
-
     public void showError(String message) {
         JOptionPane.showMessageDialog(this.mainFrame, message);
     }
 
     public void updateArticleList(List<Article> articles) {
         feedPane.update(articles);
-        mainFrame.pack();
+        mainFrame.setVisible(true);
     }
 }
