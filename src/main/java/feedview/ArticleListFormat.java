@@ -4,10 +4,9 @@ import feedcontroller.AppController;
 import feedmodel.Article;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public abstract class ArticleListFormat {
 
@@ -48,6 +47,19 @@ class ArticleByFeedPanel extends ArticleListFormat {
 
     @Override
     public List<JPanel> create(Map<String, List<Article>> articles) {
-        return null;
+        return articles.entrySet().stream().map((entry) -> createFeedGroupPanel(controller, entry.getKey(), entry.getValue())).toList();
+    }
+
+    private JPanel createFeedGroupPanel(AppController controller, String feedName, List<Article> articles) {
+        JPanel feedGroupPanel = new JPanel();
+        EventQueue.invokeLater(() -> {
+            feedGroupPanel.setLayout(new BoxLayout(feedGroupPanel, BoxLayout.PAGE_AXIS));
+            feedGroupPanel.setBorder(BorderFactory.createEtchedBorder());
+            JLabel feedNameLabel = new JLabel(String.format("<html><b>%S</b></html>", feedName), SwingConstants.LEFT);
+            feedGroupPanel.add(feedNameLabel);
+            articles.forEach(article -> feedGroupPanel.add(new ArticleDisplayPanel(controller, article).getPanel()));
+
+        });
+        return feedGroupPanel;
     }
 }

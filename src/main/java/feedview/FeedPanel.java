@@ -31,7 +31,7 @@ public class FeedPanel {
 
     public FeedPanel(AppController controller) {
         this.controller = controller;
-        this.listFormat = new AggregateArticlePanel(controller); // default, TODO settings for this
+        this.listFormat = new ArticleByFeedPanel(controller); // default, TODO settings for this
         scrollPane = new JScrollPane(panel);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         scrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);

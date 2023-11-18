@@ -51,7 +51,6 @@ public class AppController {
         ui.show();
     }
 
-
     public String[][] getFeedNamesAndURLs() {
         String[][] list = new String[feeds.size()][2];
         for (int i = 0; i < feeds.size(); i++) {
