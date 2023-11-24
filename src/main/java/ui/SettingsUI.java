@@ -1,7 +1,7 @@
-package feedview;
+package ui;
 
-import feedcontroller.AppController;
-import feedcontroller.AppSettings;
+import controller.AppController;
+import controller.AppSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,12 +22,13 @@ public class SettingsUI {
 
     public SettingsUI(AppController controller) {
         this.controller = controller;
-        settingsFrame.setResizable(false);
-        settingsFrame.setPreferredSize(new Dimension(400, 300));
-        settingsFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        settingsFrame.setContentPane(getSettingsPanel());
-        settingsFrame.pack();
+        EventQueue.invokeLater(() -> {
+            settingsFrame.setResizable(false);
+            settingsFrame.setPreferredSize(new Dimension(400, 300));
+            settingsFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            settingsFrame.setContentPane(getSettingsPanel());
+            settingsFrame.pack();
+        });
     }
 
     public void show() {

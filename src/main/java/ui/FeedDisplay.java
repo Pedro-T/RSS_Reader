@@ -1,6 +1,6 @@
-package feedview;
+package ui;
 
-import feedcontroller.AppController;
+import controller.AppController;
 import feedmodel.Article;
 
 import java.awt.*;
@@ -13,7 +13,7 @@ import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
 /**
- * FeedPanel.java
+ * FeedDisplay.java
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
@@ -21,23 +21,34 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
  * GUI section to show list of articles and their associated controls
  */
 
-public class FeedPanel {
+public class FeedDisplay {
 
     private final JPanel panel = new JPanel();
     private final JScrollPane scrollPane;
     private final AppController controller;
 
-    private ArticleListFormat listFormat;
+    private ArticleListFormat listFormat; // Assignment Note - strategy pattern usage
 
-    public FeedPanel(AppController controller) {
+    public FeedDisplay(AppController controller) {
         this.controller = controller;
-        this.listFormat = new ArticleByFeedPanel(controller); // default, TODO settings for this
+        this.listFormat = new ArticleByFeedPanel(controller); // just the default
         scrollPane = new JScrollPane(panel);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        scrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+        EventQueue.invokeLater(() -> {
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            scrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.getVerticalScrollBar().setUnitIncrement(15);
+        });
     }
 
+    public void setListFormat(ArticleListFormat listFormat) {
+        this.listFormat = listFormat;
+    }
+
+    /**
+     * Update the item list with articles from the current list in memory
+     * @param articles map of articles relayed by controller from feed manager object in String, Article arrangement
+     */
     public void update(Map<String, List<Article>> articles)  {
         EventQueue.invokeLater(() -> {
             panel.removeAll();

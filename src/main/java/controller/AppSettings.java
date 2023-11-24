@@ -1,4 +1,4 @@
-package feedcontroller;
+package controller;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 

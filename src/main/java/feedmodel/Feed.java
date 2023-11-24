@@ -1,6 +1,6 @@
 package feedmodel;
 
-import feedcontroller.AppSettings;
+import controller.AppSettings;
 
 import java.util.List;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-package feedview;
+package ui;
 
-import feedcontroller.AppController;
+import controller.AppController;
 import feedmodel.Article;
 
 import javax.imageio.ImageIO;
@@ -24,22 +24,24 @@ public class ArticleDisplayPanel {
     private final JPanel panel = new JPanel();
 
     public ArticleDisplayPanel(AppController controller, Article article) {
-        panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-        panel.setLayout(new BorderLayout());
-        panel.setPreferredSize(new Dimension(200, 100));
-        panel.add(new JLabel(article.getFeedName()), BorderLayout.SOUTH);
-        panel.add(new JLabel(article.getTitle()), BorderLayout.NORTH);
-        panel.add(getSummaryArea(article), BorderLayout.CENTER);
-        panel.add(getButtonStack(controller, article), BorderLayout.WEST);
-        if (article.hasImageURL()) {
-            Image image;
-            try {
-                image = ImageIO.read(article.getImageURL());
-                panel.add(new JLabel(new ImageIcon(image.getScaledInstance(80, 80, Image.SCALE_SMOOTH))), BorderLayout.EAST);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        EventQueue.invokeLater(() -> {
+            panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+            panel.setLayout(new BorderLayout());
+            panel.setPreferredSize(new Dimension(200, 100));
+            panel.add(new JLabel(article.getFeedName()), BorderLayout.SOUTH);
+            panel.add(new JLabel(article.getTitle()), BorderLayout.NORTH);
+            panel.add(getSummaryArea(article), BorderLayout.CENTER);
+            panel.add(getButtonStack(controller, article), BorderLayout.WEST);
+            if (article.hasImageURL()) {
+                Image image;
+                try {
+                    image = ImageIO.read(article.getImageURL());
+                    panel.add(new JLabel(new ImageIcon(image.getScaledInstance(80, 80, Image.SCALE_SMOOTH))), BorderLayout.EAST);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -70,31 +72,39 @@ public class ArticleDisplayPanel {
         JPanel buttonStackPanel = new JPanel();
         buttonStackPanel.setMinimumSize(new Dimension(30, 100));
         buttonStackPanel.setLayout(new BoxLayout(buttonStackPanel, BoxLayout.Y_AXIS));
+        buttonStackPanel.add(createOpenButton(controller, article));
+        buttonStackPanel.add(createMarkReadButton(controller, article));
+        return buttonStackPanel;
+    }
 
-        JButton openFullButton = new JButton();
-        openFullButton.setMinimumSize(new Dimension(30, 30));
-        openFullButton.setToolTipText("Open in Browser");
-        openFullButton.addActionListener(event -> controller.openInBrowser(article.getURL()));
-
+    private JButton createMarkReadButton(AppController controller, Article article) {
         JButton removeButton = new JButton();
         URL iconURL = this.getClass().getResource("/images/X.png");
-        if (iconURL != null) {
-            try {
-                Image image = ImageIO.read(iconURL);
-                removeButton.setIcon(new ImageIcon(image));
-            } catch (IOException e) {
-                e.printStackTrace();
-                removeButton.setText("X");
-            }
-        } else {
+        try {
+            Image image = ImageIO.read(iconURL);
+            removeButton.setIcon(new ImageIcon(image.getScaledInstance(20, 20, Image.SCALE_FAST)));
+        } catch (IOException e) {
+            e.printStackTrace();
             removeButton.setText("X");
         }
-        removeButton.setMinimumSize(new Dimension(30, 30));
         removeButton.setToolTipText("Mark as Read");
         removeButton.addActionListener(event -> controller.requestRemoveArticle(article));
-        buttonStackPanel.add(openFullButton);
-        buttonStackPanel.add(removeButton);
-        return buttonStackPanel;
+        return removeButton;
+    }
+
+    private JButton createOpenButton(AppController controller, Article article) {
+        JButton openFullButton = new JButton();
+        URL iconURL = this.getClass().getResource("/images/browser_icon.png");
+        try {
+            Image image = ImageIO.read(iconURL);
+            openFullButton.setIcon(new ImageIcon(image.getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            openFullButton.setText("Open");
+        }
+        openFullButton.setToolTipText("Open in Browser");
+        openFullButton.addActionListener(event -> controller.openInBrowser(article.getURL()));
+        return openFullButton;
     }
 
     public JPanel getPanel() {

@@ -1,4 +1,4 @@
-import feedcontroller.AppController;
+import controller.AppController;
 
 import javax.swing.*;
 
