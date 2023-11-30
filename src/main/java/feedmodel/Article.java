@@ -7,18 +7,18 @@ import java.net.URL;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-14
+ * @version 2023-11-26
  * Individual article, with all attributes of an article used for display in the application
  */
 
 public class Article {
 
-    private final String feedName;
-    private final String title;
-    private final String summary;
-    private final String url;
-    private final URL imageURL;
-    private final String uniqueID;
+    private String feedName;
+    private String title;
+    private String summary;
+    private String url;
+    private URL imageURL;
+    private String uniqueID;
 
     public String getFeedName() {
         return feedName;
@@ -36,6 +36,42 @@ public class Article {
         return uniqueID;
     }
 
+    public URL getImageURL() {
+        return imageURL;
+    }
+
+    public String getURL() {
+        return url;
+    }
+
+    // These are only used for serialization/deserialization
+    public void setFeedName(String feedName) {
+        this.feedName = feedName;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
+    }
+
+    public void setURL(String url) {
+        this.url = url;
+    }
+
+    public void setImageURL(URL imageURL) {
+        this.imageURL = imageURL;
+    }
+    public Article() {
+
+    }
+
     private Article(ArticleBuilder builder) {
         this.feedName = builder.feedName;
         this.title = builder.title;
@@ -49,14 +85,10 @@ public class Article {
         return imageURL != null;
     }
 
-    public URL getImageURL() {
-        return imageURL;
-    }
-
-    public String getURL() {
-        return url;
-    }
-
+    /**
+     * Assignment note - Builder pattern
+     * Provides builder functionality for Articles
+     */
     public static class ArticleBuilder {
         private String feedName;
         private String title;

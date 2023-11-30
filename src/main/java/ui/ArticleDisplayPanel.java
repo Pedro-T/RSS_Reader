@@ -9,21 +9,26 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ArticleDisplayPanel.java
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-17
+ * @version 2023-11-30
  * Provides a UI panel to display the article details and action buttons
  */
 
 public class ArticleDisplayPanel {
 
+    private static final ImageIcon openInBrowserIcon = loadImage("/images/browser_icon.png");
+    private static final ImageIcon markReadIcon = loadImage("/images/remove_icon.png");
     private final JPanel panel = new JPanel();
 
     public ArticleDisplayPanel(AppController controller, Article article) {
+
         EventQueue.invokeLater(() -> {
             panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
             panel.setLayout(new BorderLayout());
@@ -38,10 +43,26 @@ public class ArticleDisplayPanel {
                     image = ImageIO.read(article.getImageURL());
                     panel.add(new JLabel(new ImageIcon(image.getScaledInstance(80, 80, Image.SCALE_SMOOTH))), BorderLayout.EAST);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    Logger.getLogger("app").log(Level.WARNING, "Failed to retrieve image");
                 }
             }
         });
+    }
+
+    /**
+     * Load and scale image icons for the two action buttons
+     * @param url local path to image file
+     * @return scaled ImageIcon instance
+     */
+    private static ImageIcon loadImage(String url) {
+        URL iconURL = ArticleDisplayPanel.class.getResource(url);
+        try {
+            Image image = ImageIO.read(iconURL);
+            return new ImageIcon(image.getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -79,13 +100,10 @@ public class ArticleDisplayPanel {
 
     private JButton createMarkReadButton(AppController controller, Article article) {
         JButton removeButton = new JButton();
-        URL iconURL = this.getClass().getResource("/images/X.png");
-        try {
-            Image image = ImageIO.read(iconURL);
-            removeButton.setIcon(new ImageIcon(image.getScaledInstance(20, 20, Image.SCALE_FAST)));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (markReadIcon == null) {
             removeButton.setText("X");
+        } else {
+            removeButton.setIcon(markReadIcon);
         }
         removeButton.setToolTipText("Mark as Read");
         removeButton.addActionListener(event -> controller.requestRemoveArticle(article));
@@ -94,13 +112,10 @@ public class ArticleDisplayPanel {
 
     private JButton createOpenButton(AppController controller, Article article) {
         JButton openFullButton = new JButton();
-        URL iconURL = this.getClass().getResource("/images/browser_icon.png");
-        try {
-            Image image = ImageIO.read(iconURL);
-            openFullButton.setIcon(new ImageIcon(image.getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
-        } catch (IOException e) {
-            e.printStackTrace();
-            openFullButton.setText("Open");
+        if (openInBrowserIcon == null) {
+            openFullButton.setText("open");
+        } else {
+            openFullButton.setIcon(openInBrowserIcon);
         }
         openFullButton.setToolTipText("Open in Browser");
         openFullButton.addActionListener(event -> controller.openInBrowser(article.getURL()));
@@ -110,5 +125,4 @@ public class ArticleDisplayPanel {
     public JPanel getPanel() {
         return panel;
     }
-
 }

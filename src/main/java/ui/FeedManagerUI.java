@@ -14,7 +14,7 @@ import java.awt.event.FocusListener;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-24
+ * @version 2023-11-25
  * Provides for a separate popup window to manage feed subscriptions, controls to add/remove
  */
 
@@ -107,10 +107,4 @@ public class FeedManagerUI {
         panel.add(addFeedButton);
         return panel;
     }
-
-    public JPanel getFeedManagerPanel() {
-        return this.feedManagerPanel;
-    }
-
-
 }

@@ -20,7 +20,7 @@ import java.util.Map;
 
 public abstract class ArticleListFormat {
 
-    AppController controller;
+    protected AppController controller;
 
     public ArticleListFormat(AppController controller) {
         this.controller = controller;

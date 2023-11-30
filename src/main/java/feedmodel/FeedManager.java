@@ -24,12 +24,13 @@ import java.util.regex.Pattern;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-14
+ * @version 2023-11-30
  * Central point for managing feed objects, retrieving data
+ * MVC - Model (along with Article and Feed)
  */
 
 public class FeedManager implements NotificationSubject {
-    private final List<Feed> feeds = new ArrayList<>();
+    private List<Feed> feeds = new ArrayList<>();
     private final Logger logger = Logger.getLogger("app");
 
     private final List<NotificationObserver> observers = new ArrayList<>();
@@ -38,12 +39,11 @@ public class FeedManager implements NotificationSubject {
 
     }
 
-    public void clearAll() {
-        feeds.clear();
-    }
-
     public List<Feed> getFeeds() {
         return this.feeds;
+    }
+    public void setFeeds(List<Feed> feeds) {
+        this.feeds = feeds;
     }
 
     public void removeArticle(Article article) {
@@ -52,6 +52,10 @@ public class FeedManager implements NotificationSubject {
         }
     }
 
+    /**
+     * Remove a feed by given URL
+     * @param feedURL String url to check for
+     */
     public void remove(String feedURL) {
         for (Feed f : feeds) {
             if (f.getFeedURL().equals(feedURL)) {
@@ -61,6 +65,11 @@ public class FeedManager implements NotificationSubject {
         }
     }
 
+    /**
+     * Create a map of feed name to article list, used to populate the UI
+     * @param perFeed number of articles per feed to retrieve
+     * @return map of feed names and lists of Articles
+     */
     public Map<String, List<Article>> getCurrentArticles(int perFeed)  {
         HashMap<String, List<Article>> articles = new HashMap<>();
         for (Feed f : feeds) {
@@ -77,14 +86,36 @@ public class FeedManager implements NotificationSubject {
     }
 
     /**
-     * Attempt to add a new RSS feed to the list and populate its articles
+     * Helper for addFeed to check if the url is already tied to a loaded feed
+     * @param url String url to check for
+     * @return the feed tied to this url, or null if no feed is available
+     */
+    private Feed getFeedByURL(String url) {
+        for (Feed f : feeds) {
+            logger.log(Level.INFO, String.format("Checking for feed %s", f.getFeedURL()));
+            if (f.getFeedURL().equals(url)) {
+                logger.log(Level.INFO, "Feed already exists");
+                return f;
+            } else {
+                System.out.printf("%s is not equal to %s", url, f.getFeedURL());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Attempt to add a new RSS feed to the list and populate its articles. If the feed already exists, just add new articles
      * @param inputURLString url of the feed
      */
     public void addFeed(String inputURLString) throws DocumentException, IOException {
         logger.log(Level.INFO, String.format("Retrieving feed %s", inputURLString));
+        Feed feed = getFeedByURL(inputURLString);
         URL url = new URL(inputURLString);
         Document feedDoc = getFeedData(url);
-        Feed feed = new Feed(feedDoc.valueOf(".//channel/title"), url.toString());
+        if (feed == null) {
+            feed = new Feed(feedDoc.valueOf(".//channel/title"), url.toString());
+            feeds.add(feed);
+        }
         List<Node> articles = feedDoc.selectNodes(".//channel/item");
         if (!articles.isEmpty()) {
             for (Node s : articles) {
@@ -109,22 +140,24 @@ public class FeedManager implements NotificationSubject {
                     }
                 }
                 Node uidNode = s.selectSingleNode("guid");
-                if (uidNode != null) {
-                    builder.setUniqueID(uidNode.getText());
-                } else {
-                    builder.generateUniqueID();
+                if (uidNode != null && feed.containsUID(uidNode.getText())) {
+                    break;
                 }
-                feed.addArticle(builder.build());
+                if (uidNode != null) {
+                    logger.log(Level.INFO, String.format("No match for %s among %s", uidNode.getText(), feed.getReadUIDs()));
+                    builder.setUniqueID(uidNode.getText());
+                    feed.addArticle(builder.build());
+                }
             }
         }
-        feeds.add(feed);
         notifyUpdates(String.format("Feed %s has %d unread articles", feed.getName(), feed.getArticles().size()));
     }
 
-    private Document getFeedData(URL url) throws IOException, DocumentException {
+    private Document getFeedData(URL url) throws DocumentException {
         return new SAXReader().read(url);
     }
 
+    // Observer pattern bits
     @Override
     public void addObserver(NotificationObserver o) {
         this.observers.add(o);

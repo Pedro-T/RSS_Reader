@@ -17,7 +17,7 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-12
+ * @version 2023-11-24
  * GUI section to show list of articles and their associated controls
  */
 
@@ -25,12 +25,9 @@ public class FeedDisplay {
 
     private final JPanel panel = new JPanel();
     private final JScrollPane scrollPane;
-    private final AppController controller;
-
     private ArticleListFormat listFormat; // Assignment Note - strategy pattern usage
 
     public FeedDisplay(AppController controller) {
-        this.controller = controller;
         this.listFormat = new ArticleByFeedPanel(controller); // just the default
         scrollPane = new JScrollPane(panel);
         EventQueue.invokeLater(() -> {

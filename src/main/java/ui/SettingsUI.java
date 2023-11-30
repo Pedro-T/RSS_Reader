@@ -6,6 +6,16 @@ import controller.AppSettings;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * SettingsUI.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-26
+ * Provides for a separate popup window to manage user settings. This class simply generates
+ * the interface and sends the information back to AppController if the user selects 'save'
+ */
+
 public class SettingsUI {
 
     private final JFrame settingsFrame = new JFrame("Settings");
@@ -35,10 +45,13 @@ public class SettingsUI {
         EventQueue.invokeLater(() -> settingsFrame.setVisible(true));
     }
 
+    /**
+     * Generate the settings option panel with control values set to current settings
+     * @return jpanel containing all settings controls
+     */
     private JPanel getSettingsPanel() {
         EventQueue.invokeLater(() -> {
             settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
-
             if (settings.isAutoRefresh()) {
                 autoRefreshCheckBox.doClick();
             }
@@ -81,9 +94,5 @@ public class SettingsUI {
         JButton CloseButton = new JButton("Close");
         CloseButton.addActionListener(event -> settingsFrame.dispose());
         return CloseButton;
-    }
-
-    private void promptRestart() {
-        JOptionPane.showMessageDialog(settingsFrame, "Please restart the app for\nsettings to take effect.");
     }
 }

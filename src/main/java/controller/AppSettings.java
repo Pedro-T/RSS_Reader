@@ -7,17 +7,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * AppSettings.java
+ * CPSC6119
+ * Assignments 5-7
+ * @author Pedro Teixeira
+ * @version 2023-11-26
+ * This class is responsible for holding, updating, saving/loading the application settings
+ * Assignment note - Singleton usage
+ */
+
 public class AppSettings {
 
-    private static final String SETTINGS_FILE_NAME = "settings.json";
+    private static final String SETTINGS_FILE_PATH = System.getProperty("user.home") + File.separator + "RSS_Reader" + File.separator + "settings.json";
     private int updateInterval = 5;
     private int articlesPerFeed = 3;
     private boolean autoRefresh = false;
     private boolean aggregateFeeds = true;
     private static AppSettings instance = null;
     private List<String> subscribedFeedURLs;
-    private List<String> readUIDs;
 
+    // Assignment note - Singleton
     public static synchronized AppSettings getInstance() {
         if (instance == null) {
             try {
@@ -31,15 +41,22 @@ public class AppSettings {
     }
 
     private AppSettings() {
-
+        ensureDirectoryExists();
     }
 
     private static AppSettings readSettingsFile() throws IOException {
-        return JSON.std.beanFrom(AppSettings.class, new File(SETTINGS_FILE_NAME));
+        return JSON.std.beanFrom(AppSettings.class, new File(SETTINGS_FILE_PATH));
+    }
+
+    private void ensureDirectoryExists() {
+        File dir = new File(String.format("%s%sRSS_Reader", System.getProperty("user.home"), File.separator));
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
     }
 
     private void writeSettingsFile() throws IOException {
-        JSON.std.write(this, new File(SETTINGS_FILE_NAME));
+        JSON.std.write(this, new File(SETTINGS_FILE_PATH));
     }
 
     public void setUpdateInterval(int updateInterval) {
@@ -86,27 +103,9 @@ public class AppSettings {
         return this.subscribedFeedURLs;
     }
 
-    // only used for serialization
+    // following only used for serialization / deserialization
     public void setSubscribedFeedURLs(List<String> subscribedFeedURLs) {
         this.subscribedFeedURLs = subscribedFeedURLs;
-    }
-
-    // only used for serialization
-    public void setReadUIDs(List<String> readUIDs) {
-        this.readUIDs = readUIDs;
-    }
-
-    // only used for serialization
-    public List<String> getReadUIDs() {
-        return this.readUIDs;
-    }
-
-    public void addReadUID(String uid) {
-        this.readUIDs.add(uid);
-    }
-
-    public boolean hasReadUID(String uid) {
-        return readUIDs.contains(uid);
     }
 
     public void setDefaults() {
@@ -115,16 +114,13 @@ public class AppSettings {
         autoRefresh = false;
         aggregateFeeds = true;
         subscribedFeedURLs = new ArrayList<>();
-        readUIDs = new ArrayList<>();
     }
 
     public void save() {
         try {
             writeSettingsFile();
         } catch (IOException ignored) {
-            // just give up for now
+            // just skip
         }
     }
-
-
 }

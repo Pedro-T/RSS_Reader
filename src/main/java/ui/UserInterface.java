@@ -5,6 +5,8 @@ import feedmodel.Article;
 import feedmodel.FeedManager;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.*;
 import java.util.Map;
@@ -14,8 +16,9 @@ import java.util.Map;
  * CPSC6119
  * Assignments 5-7
  * @author Pedro Teixeira
- * @version 2023-11-18
+ * @version 2023-11-26
  * Core UI, main frame for application and menus
+ * MVC - View (along with associated UI classes)
  */
 
 public class UserInterface {
@@ -42,11 +45,22 @@ public class UserInterface {
     }
 
     public void show() {
-        mainFrame.setVisible(true);
+        EventQueue.invokeLater(() -> mainFrame.setVisible(true));
     }
 
+    /**
+     * Create the frame and add a listener to call the save to cache functionality on closing
+     * WindowListener adapted from https://stackoverflow.com/questions/16372241/run-function-on-jframe-close
+     * @return the primary JFrame for the application
+     */
     private JFrame createFrame() {
         JFrame frame = new JFrame();
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                appController.exitSaveCache();
+            }
+        });
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle(FRAME_TITLE);
         frame.setPreferredSize(new Dimension(500, 800));
@@ -61,6 +75,10 @@ public class UserInterface {
         return panel;
     }
 
+    /**
+     * Create a simple menu bar to access the feed manager and settings windows, an about popup, and the debug clear UIDs option
+     * @return the created JMenuBar object
+     */
     private JMenuBar createMenu() {
         JMenuBar menuBar = new JMenuBar();
         EventQueue.invokeLater(() -> {
@@ -83,14 +101,26 @@ public class UserInterface {
         return menuBar;
     }
 
+    /**
+     * toggles the display mode to aggregate or separated by feed
+     * @param aggregate
+     */
     public void setAggregateDisplayMode(boolean aggregate) {
         feedDisplay.setListFormat(aggregate ? new AggregateArticlePanel(appController) : new ArticleByFeedPanel(appController));
     }
 
+    /**
+     * Create a generic message popup to show various errors to the user
+     * @param message string to populate in body of dialog box
+     */
     public void showError(String message) {
         JOptionPane.showMessageDialog(this.mainFrame, message);
     }
 
+    /**
+     * pass the article list to the feed display panel for updating
+     * @param articles map of feed names and articles
+     */
     public void updateArticleList(Map<String, List<Article>> articles) {
         feedDisplay.update(articles);
         mainFrame.setVisible(true);
@@ -102,6 +132,9 @@ public class UserInterface {
         return refreshButton;
     }
 
+    /**
+     * Display a basic 'about' popup, including attribution for free icons used
+     */
     public void showAbout() {
         String aboutText = "<html><h2>RSS Reader Project</h2><h3>Pedro Teixeira</h3><p>This application uses free icon images from Vecteeze<br />https://www.vecteezy.com/free-vector/</p></html>";
         JOptionPane.showMessageDialog(mainFrame, aboutText);
