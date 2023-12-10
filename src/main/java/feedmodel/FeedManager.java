@@ -144,7 +144,6 @@ public class FeedManager implements NotificationSubject {
                     break;
                 }
                 if (uidNode != null) {
-                    logger.log(Level.INFO, String.format("No match for %s among %s", uidNode.getText(), feed.getReadUIDs()));
                     builder.setUniqueID(uidNode.getText());
                     feed.addArticle(builder.build());
                 }

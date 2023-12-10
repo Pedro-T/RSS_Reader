@@ -70,9 +70,7 @@ public class FeedManagerUI {
 
     private void updateFeedTable() {
         tableData = controller.getFeedNamesAndURLs();
-        if (tableData.length != 0) {
-            EventQueue.invokeLater(() -> feedTable.setModel(new DefaultTableModel(tableData, COLUMN_NAMES)));
-        }
+        EventQueue.invokeLater(() -> feedTable.setModel(new DefaultTableModel(tableData, COLUMN_NAMES)));
         EventQueue.invokeLater(() -> deleteButton.setEnabled(tableData.length != 0));
     }
 

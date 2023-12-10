@@ -2,7 +2,6 @@ package ui;
 
 import controller.AppController;
 import feedmodel.Article;
-import feedmodel.FeedManager;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -96,7 +95,6 @@ public class UserInterface {
             JMenuItem aboutMenuItem = new JMenuItem("About");
             aboutMenuItem.addActionListener(event -> showAbout());
             menu.add(aboutMenuItem);
-            menuBar.add(new DebugMenu().create());
         });
         return menuBar;
     }
